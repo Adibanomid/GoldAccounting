@@ -1,0 +1,271 @@
+<!-- templates/transactions/create.html -->
+
+{% extends "base.html" %} {% load static %} {% block title %} ثبت معامله
+{%endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'transactions/transaction.css' %}" />
+{% endblock %} {% block content %}
+
+<div class="page-container">
+  <div class="page-header">
+    <h1>ثبت معامله جدید</h1>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" id="transaction-form">
+    {% csrf_token %}
+
+    <!-- ===================================== -->
+    <!-- Transaction -->
+    <!-- ===================================== -->
+
+    <div class="card">
+      <h3>اطلاعات معامله</h3>
+
+      <div class="grid-2">
+        <div>
+          <label>نوع معامله</label>
+          {{ transaction_form.transaction_type }}
+        </div>
+
+        <div>
+          <label>تاریخ معامله</label>
+          {{ transaction_form.transaction_date }}
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Counterparty -->
+    <!-- ===================================== -->
+
+    <div class="card">
+      <h3>طرف معامله</h3>
+
+      <div class="grid-2">
+        <div>
+          <label>نوع طرف معامله</label>
+          {{ transaction_form.counterparty_type }}
+        </div>
+
+        <div>
+          <label>نام</label>
+          {{ transaction_form.counterparty_name }}
+        </div>
+
+        <div>
+          <label>موبایل</label>
+          {{ transaction_form.counterparty_mobile }}
+        </div>
+
+        <div>
+          <label>کد ملی</label>
+          {{ transaction_form.counterparty_national_code }}
+        </div>
+      </div>
+
+      <div class="mt-20">
+        <label>آدرس</label>
+        {{ transaction_form.counterparty_address }}
+      </div>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Gold -->
+    <!-- ===================================== -->
+
+    <div class="card">
+      <h3>اطلاعات طلا</h3>
+
+      <div class="grid-2">
+        <div>
+          <label>نوع طلا</label>
+          {{ transaction_form.gold_category }}
+        </div>
+
+        <div id="normal-gold-wrapper">
+          <label>نوع طلای عادی</label>
+          {{ transaction_form.normal_gold_type }}
+        </div>
+      </div>
+
+      <!-- Melted -->
+
+      <div id="melted-section">
+        <h4>طلای آبشده</h4>
+
+        <div class="grid-3">
+          <div>
+            <label>وزن</label>
+            {{ melted_form.weight }}
+          </div>
+
+          <div>
+            <label>عیار</label>
+            {{ melted_form.assay }}
+          </div>
+
+          <div>
+            <label>کد آبشده</label>
+            {{ melted_form.melting_code }}
+          </div>
+
+          <div>
+            <label>شماره پاکت</label>
+            {{ melted_form.package_number }}
+          </div>
+
+          <div>
+            <label>شماره آزمایشگاه</label>
+            {{ melted_form.laboratory_number }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Manufactured -->
+
+      <div id="manufactured-section">
+        <h4>طلای ساخته</h4>
+
+        <div class="grid-3">
+          <div>
+            {{ manufactured_form.weight.label_tag }} {{ manufactured_form.weight
+            }}
+          </div>
+
+          <div>
+            {{ manufactured_form.karat.label_tag }} {{ manufactured_form.karat
+            }}
+          </div>
+
+          <div>
+            {{ manufactured_form.quantity.label_tag }} {{
+            manufactured_form.quantity }}
+          </div>
+
+          <div>
+            {{ manufactured_form.wage.label_tag }} {{ manufactured_form.wage }}
+          </div>
+
+          <div>
+            {{ manufactured_form.profit_percent.label_tag }} {{
+            manufactured_form.profit_percent }}
+          </div>
+
+          <div>
+            {{ manufactured_form.tax_amount.label_tag }} {{
+            manufactured_form.tax_amount }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Misc -->
+
+      <div id="misc-section">
+        <h4>طلای متفرقه</h4>
+
+        <div class="grid-3">
+          <div>{{ misc_form.weight.label_tag }} {{ misc_form.weight }}</div>
+
+          <div>{{ misc_form.karat.label_tag }} {{ misc_form.karat }}</div>
+
+          <div>{{ misc_form.quantity.label_tag }} {{ misc_form.quantity }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Gold Status -->
+    <!-- ===================================== -->
+
+    <div class="card">
+      <h3>وضعیت تحویل</h3>
+
+      {{ transaction_form.gold_status }}
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Payments -->
+    <!-- ===================================== -->
+
+    <div class="card">
+      <div class="section-header">
+        <h3>پرداخت ها</h3>
+
+        <button type="button" id="add-payment-btn" class="btn-secondary">
+          افزودن پرداخت
+        </button>
+      </div>
+
+      {{ payment_formset.management_form }}
+
+      <div id="payments-container">
+        {% for form in payment_formset %}
+
+        <div class="payment-card">
+          {{ form.id }}
+
+          <div class="grid-3">
+            <div>{{ form.method.label_tag }} {{ form.method }}</div>
+
+            <div>{{ form.amount.label_tag }} {{ form.amount }}</div>
+
+            <div>{{ form.status.label_tag }} {{ form.status }}</div>
+          </div>
+
+          <div class="grid-3 mt-20">
+            <div>
+              {{ form.reference_number.label_tag }} {{ form.reference_number }}
+            </div>
+
+            <div>{{ form.card_number.label_tag }} {{ form.card_number }}</div>
+
+            <div>
+              {{ form.terminal_number.label_tag }} {{ form.terminal_number }}
+            </div>
+          </div>
+
+          <div class="grid-4 mt-20">
+            <div>
+              {{ form.cheque_number.label_tag }} {{ form.cheque_number }}
+            </div>
+
+            <div>{{ form.bank_name.label_tag }} {{ form.bank_name }}</div>
+
+            <div>{{ form.due_date.label_tag }} {{ form.due_date }}</div>
+
+            <div>
+              {{ form.account_owner.label_tag }} {{ form.account_owner }}
+            </div>
+          </div>
+
+          <div class="mt-20">
+            {{ form.cheque_image.label_tag }} {{ form.cheque_image }}
+          </div>
+        </div>
+
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Description -->
+    <!-- ===================================== -->
+
+    <div class="card">
+      <h3>توضیحات</h3>
+
+      {{ transaction_form.description }}
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Submit -->
+    <!-- ===================================== -->
+
+    <div class="submit-bar">
+      <button type="submit" class="btn-primary">ثبت معامله</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %} {% block extra_js %}
+<script src="{% static 'transactions/transaction.js' %}"></script>
+{% endblock %}

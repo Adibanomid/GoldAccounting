@@ -1,0 +1,235 @@
+<!-- templates/transactions/detail.html -->
+
+{% extends "base.html" %} {% block title %} جزئیات معامله {% endblock %} {%
+block content %}
+
+<div class="page-container">
+  <div class="card">
+    <h1>معامله #{{ transaction.id }}</h1>
+
+    <div class="grid-2">
+      <div>
+        <strong>نوع معامله:</strong>
+        {{ transaction.get_transaction_type_display }}
+      </div>
+
+      <div>
+        <strong>تاریخ:</strong>
+        {{ transaction.transaction_date }}
+      </div>
+
+      <div>
+        <strong>شعبه:</strong>
+        {{ transaction.branch }}
+      </div>
+
+      <div>
+        <strong>ثبت کننده:</strong>
+        {{ transaction.created_by }}
+      </div>
+
+      <div>
+        <strong>طرف معامله:</strong>
+        {{ transaction.counterparty.name }}
+      </div>
+
+      <div>
+        <strong>نوع طرف معامله:</strong>
+        {{ transaction.counterparty.get_type_display }}
+      </div>
+
+      <div>
+        <strong>وضعیت تحویل طلا:</strong>
+        {{ transaction.get_gold_status_display }}
+      </div>
+
+      <div>
+        <strong>نوع طلا:</strong>
+        {{ transaction.get_gold_category_display }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================== -->
+  <!-- Gold Details -->
+  <!-- ===================================== -->
+
+  <div class="card">
+    <h3>مشخصات طلا</h3>
+
+    {% if transaction.gold_category == "melted" %}
+
+    <div class="grid-3">
+      <div>
+        <strong>وزن:</strong>
+        {{ transaction.melted_gold.weight }}
+      </div>
+
+      <div>
+        <strong>عیار:</strong>
+        {{ transaction.melted_gold.assay }}
+      </div>
+
+      <div>
+        <strong>کد آبشده:</strong>
+        {{ transaction.melted_gold.melting_code }}
+      </div>
+
+      <div>
+        <strong>شماره پاکت:</strong>
+        {{ transaction.melted_gold.package_number }}
+      </div>
+
+      <div>
+        <strong>شماره آزمایشگاه:</strong>
+        {{ transaction.melted_gold.laboratory_number }}
+      </div>
+    </div>
+
+    {% elif transaction.normal_gold_type == "manufactured" %}
+
+    <div class="grid-3">
+      <div>
+        <strong>وزن:</strong>
+        {{ transaction.manufactured_gold.weight }}
+      </div>
+
+      <div>
+        <strong>عیار:</strong>
+        {{ transaction.manufactured_gold.karat }}
+      </div>
+
+      <div>
+        <strong>تعداد:</strong>
+        {{ transaction.manufactured_gold.quantity }}
+      </div>
+
+      <div>
+        <strong>اجرت:</strong>
+        {{ transaction.manufactured_gold.wage }}
+      </div>
+
+      <div>
+        <strong>سود:</strong>
+        {{ transaction.manufactured_gold.profit_percent }}%
+      </div>
+
+      <div>
+        <strong>مالیات:</strong>
+        {{ transaction.manufactured_gold.tax_amount }}
+      </div>
+    </div>
+
+    {% elif transaction.normal_gold_type == "misc" %}
+
+    <div class="grid-3">
+      <div>
+        <strong>وزن:</strong>
+        {{ transaction.misc_gold.weight }}
+      </div>
+
+      <div>
+        <strong>عیار:</strong>
+        {{ transaction.misc_gold.karat }}
+      </div>
+
+      <div>
+        <strong>تعداد:</strong>
+        {{ transaction.misc_gold.quantity }}
+      </div>
+    </div>
+
+    {% endif %}
+  </div>
+
+  <!-- ===================================== -->
+  <!-- Payments -->
+  <!-- ===================================== -->
+
+  <div class="card">
+    <h3>پرداخت‌ها</h3>
+
+    {% for payment in transaction.payments.all %}
+
+    <div class="payment-card">
+      <div class="grid-3">
+        <div>
+          <strong>روش:</strong>
+          {{ payment.get_method_display }}
+        </div>
+
+        <div>
+          <strong>مبلغ:</strong>
+          {{ payment.amount }}
+        </div>
+
+        <div>
+          <strong>وضعیت:</strong>
+          {{ payment.get_status_display }}
+        </div>
+      </div>
+
+      {% if payment.method == "card" and payment.card_detail %}
+
+      <hr />
+
+      <p>
+        <strong>شماره پیگیری:</strong>
+        {{ payment.card_detail.reference_number }}
+      </p>
+
+      <p>
+        <strong>شماره کارت:</strong>
+        {{ payment.card_detail.card_number }}
+      </p>
+
+      {% endif %} {% if payment.method == "cheque" and payment.cheque_detail %}
+
+      <hr />
+
+      <p>
+        <strong>شماره چک:</strong>
+        {{ payment.cheque_detail.cheque_number }}
+      </p>
+
+      <p>
+        <strong>بانک:</strong>
+        {{ payment.cheque_detail.bank_name }}
+      </p>
+
+      <p>
+        <strong>سررسید:</strong>
+        {{ payment.cheque_detail.due_date }}
+      </p>
+
+      <p>
+        <strong>صاحب حساب:</strong>
+        {{ payment.cheque_detail.account_owner }}
+      </p>
+
+      {% endif %}
+    </div>
+
+    {% empty %}
+
+    <p>هیچ پرداختی ثبت نشده است.</p>
+
+    {% endfor %}
+  </div>
+
+  <!-- ===================================== -->
+  <!-- Description -->
+  <!-- ===================================== -->
+
+  {% if transaction.description %}
+
+  <div class="card">
+    <h3>توضیحات</h3>
+
+    <p>{{ transaction.description }}</p>
+  </div>
+
+  {% endif %}
+</div>
+
+{% endblock %}
